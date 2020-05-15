@@ -1,0 +1,8 @@
+{
+  "name": "fundski-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ogwurujohnson/fundsbackend.git",
+  "author": "ogwurujohnson <ogwurujohnson@gmail.com>",
+  "license": "MIT"
+}
