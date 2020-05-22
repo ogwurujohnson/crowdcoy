@@ -53,7 +53,7 @@ contract CrowdFunding {
 
     }
 
-    function getAllCampaigns() public view returns(string[] memory){
+    function getAllCampaigns() public view returns(){
         return campaigns;
     }
 
@@ -62,6 +62,10 @@ contract CrowdFunding {
     }
 
     function getSingleCampaign(string memory _id) public view returns(string memory) {
+        return retrieveCampaign(_id);
+    }
+
+    function retrieveCampaign(string memory _id) private returns(Campaign memory) {
         return userCampaign[_id];
     }
 
