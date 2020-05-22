@@ -1,7 +1,11 @@
 pragma solidity >=0.4.0 < 0.7.0;
 
+import './Utils.sol';
+
 // Documentation: https://coursetro.com/posts/code/102/Solidity-Mappings-&-Structs-Tutorial
 contract CrowdFunding {
+
+    using Utils for *;
 
     event campaignStarted(address addr, uint budget, uint name);
     event campaignCompleted(address addr, uint totalCollected, bool succeded);
@@ -13,41 +17,55 @@ contract CrowdFunding {
         Paid
     }
 
-    struct campaign {
-        address beneficiary;
+    struct Funder {
+        address addr;
+        uint amount;
+    }
+
+    struct Campaign {
+        address payable beneficiary;
         string name;
         uint budget;
+        uint numFunders;
         uint received;
         uint deadline;
+        mapping (uint => Funder) funders;
     }
-    mapping(string => campaign) userCampaign;
-    address[] public campaigns;
+    mapping(string => Campaign) userCampaign;
+    string[] public campaigns;
 
     constructor() public {
 
     }
 
-    function create(string memory _name, uint _targetAmount, uint _durationinMin, address payable _beneficiary) public {
-
+    function create(string memory _name, uint _targetAmount, uint _durationInMin, address payable _beneficiary, string memory _id) public {
+        userCampaign[_id] = Campaign(_beneficiary, _name, _targetAmount,0, 0, currentTime() + Utils.minutesToSeconds(_durationInMin));
+        campaigns.push(_id);
     }
 
-    function contribute(address _to, uint _amount) public payable {
-
+    function contribute(string memory _id) public payable {
+        Campaign storage c = userCampaign[_id];
+        c.funders[c.numFunders++] = Funder({addr: msg.sender, amount: msg.value});
+        c.received += msg.value;
     }
 
     function reimburse(address _from) public payable {
 
     }
 
-    function getAllCampaigns() public view {
-        
+    function getAllCampaigns() public view returns(string[] memory){
+        return campaigns;
     }
 
-    function getCampaignCount() public view {
-
+    function getCampaignCount() public view returns(uint) {
+        return campaigns.length;
     }
 
-    function getSingleCampaign() public view {
+    function getSingleCampaign(string memory _id) public view returns(string memory) {
+        return userCampaign[_id];
+    }
 
+    function currentTime() internal view returns(uint) {
+        return now;
     }
 }
