@@ -87,8 +87,10 @@ contract CrowdFunding {
     function withdraw(string memory _id) public payable {
         Campaign storage c = userCampaign[_id];
         require((c.approval/c.numFunders)*100 > 50, 'amount of allowed approvals not reached');
+        
         //before they can withdraw they would need the approval of 50% of donaters
-        // and also campaign needs to have a completed status
+        // budget doesnt need to be met before user can request to withdraw
+        // but usser cant withdraw before end of deadline
     }
 
     function getCampaignCount() public view returns(uint) {
