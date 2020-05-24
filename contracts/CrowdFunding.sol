@@ -7,8 +7,8 @@ contract CrowdFunding {
 
     using Utils for *;
 
-    event campaignStarted(address addr, uint budget, uint name);
-    event campaignCompleted(address addr, uint totalCollected, bool succeded);
+    event CampaignStarted(address addr, uint budget, uint name);
+    event CampaignCompleted(string id, address addr, uint totalCollected, bool succeded);
 
     enum State {
         Ongoing,
