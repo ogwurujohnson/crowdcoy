@@ -26,10 +26,12 @@ contract CrowdFunding {
         address payable beneficiary;
         string name;
         uint budget;
+        uint approval;
         uint numFunders;
         uint received;
         uint deadline;
-        mapping (uint => Funder) funders;
+        bool status;
+        mapping (address => Funder) funders;
     }
     mapping(string => Campaign) userCampaign;
     string[] public campaigns;
