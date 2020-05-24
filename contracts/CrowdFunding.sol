@@ -44,19 +44,23 @@ contract CrowdFunding {
 
     modifier isFunder(string memory _id, address addr) {
         Campaign storage c = userCampaign[_id];
-        require(c.funders[addr], 'Not a funder of this campaign');
+        require(c.funders[addr].addr == addr, 'Not a funder of this campaign');
         _;
     }
 
     function create(string memory _name, uint _targetAmount, uint _durationInMin, address payable _beneficiary, string memory _id) public {
-        userCampaign[_id] = Campaign(_beneficiary, _name, _targetAmount,0, 0, currentTime() + Utils.minutesToSeconds(_durationInMin), false);
+        userCampaign[_id] = Campaign(_beneficiary, _name, _targetAmount, 0, 0, 0, currentTime() + Utils.minutesToSeconds(_durationInMin), false);
         campaigns.push(_id);
     }
 
     function contribute(string memory _id) public payable {
         Campaign storage c = userCampaign[_id];
-        c.funders[c.numFunders++] = Funder({addr: msg.sender, amount: msg.value});
+        c.funders[msg.sender] = Funder({addr: msg.sender, amount: msg.value});
         c.received += msg.value;
+
+        if (c.received >= c.budget) {
+            c.status = true;
+        }
     }
 
     function finishCampaign(string memory _id) public {
@@ -70,15 +74,21 @@ contract CrowdFunding {
         emit CampaignCompleted(_id, msg.sender, c.received, c.status);
     }
 
-    function approve(string memory _id) public {
+    function approve(string memory _id) public isFunder(_id, msg.sender) {
         Campaign storage c = userCampaign[_id];
         require(c.funders[msg.sender].amount > 0, 'Not enough donation to be able to approve');
         c.approval++;
     }
+
+    function reimburse(string memory _id) public payable {
+        Campaign storage c = userCampaign[_id];
     }
 
-    function getAllCampaigns() public view returns(){
-        return campaigns;
+    function withdraw(string memory _id) public payable {
+        Campaign storage c = userCampaign[_id];
+        require((c.approval/c.numFunders)*100 > 50, 'amount of allowed approvals not reached');
+        //before they can withdraw they would need the approval of 50% of donaters
+        // and also campaign needs to have a completed status
     }
 
     function getCampaignCount() public view returns(uint) {
