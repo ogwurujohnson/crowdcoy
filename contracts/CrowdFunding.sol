@@ -59,7 +59,16 @@ contract CrowdFunding {
         c.received += msg.value;
     }
 
-    function reimburse(address _from) public payable {
+    function finishCampaign(string memory _id) public {
+        Campaign memory c = userCampaign[_id];
+        if(!c.status) {
+            state = State.Failed;
+        } else {
+            state = State.Succeded;
+        }
+
+        emit CampaignCompleted(_id, msg.sender, c.received, c.status);
+    }
 
     }
 
