@@ -45,7 +45,7 @@ contract CrowdFunding {
     }
 
     function create(string memory _name, uint _targetAmount, uint _durationInMin, address payable _beneficiary, string memory _id) public {
-        userCampaign[_id] = Campaign(_beneficiary, _name, _targetAmount,0, 0, currentTime() + Utils.minutesToSeconds(_durationInMin));
+        userCampaign[_id] = Campaign(_beneficiary, _name, _targetAmount,0, 0, currentTime() + Utils.minutesToSeconds(_durationInMin), false);
         campaigns.push(_id);
     }
 
