@@ -70,6 +70,11 @@ contract CrowdFunding {
         emit CampaignCompleted(_id, msg.sender, c.received, c.status);
     }
 
+    function approve(string memory _id) public {
+        Campaign storage c = userCampaign[_id];
+        require(c.funders[msg.sender].amount > 0, 'Not enough donation to be able to approve');
+        c.approval++;
+    }
     }
 
     function getAllCampaigns() public view returns(){
