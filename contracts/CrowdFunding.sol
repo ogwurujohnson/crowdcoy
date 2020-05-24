@@ -85,12 +85,8 @@ contract CrowdFunding {
         return campaigns.length;
     }
 
-    function getSingleCampaign(string memory _id) public view returns(string memory) {
-        return retrieveCampaign(_id);
-    }
-
-    function retrieveCampaign(string memory _id) private returns(Campaign memory) {
-        return userCampaign[_id];
+    function beforeDeadline(string memory _id) public view returns(bool) {
+        return currentTime() < userCampaign[_id].deadline;
     }
 
     function currentTime() internal view returns(uint) {
