@@ -35,8 +35,12 @@ contract CrowdFunding {
     }
     mapping(string => Campaign) userCampaign;
     string[] public campaigns;
+    State public state;
 
-    constructor() public {
+    modifier inState(State expectedState) {
+        require(state == expectedState, 'Invalid state');
+        _;
+    }
 
     }
 
