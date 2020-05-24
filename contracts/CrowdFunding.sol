@@ -42,6 +42,10 @@ contract CrowdFunding {
         _;
     }
 
+    modifier isFunder(string memory _id, address addr) {
+        Campaign storage c = userCampaign[_id];
+        require(c.funders[addr], 'Not a funder of this campaign');
+        _;
     }
 
     function create(string memory _name, uint _targetAmount, uint _durationInMin, address payable _beneficiary, string memory _id) public {
