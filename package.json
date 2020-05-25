@@ -4,5 +4,10 @@
   "main": "index.js",
   "repository": "https://github.com/ogwurujohnson/fundsbackend.git",
   "author": "ogwurujohnson <ogwurujohnson@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "compile": "truffle compile",
+    "deploy": "truffle migrate --network=energi",
+    "test_deploy": "truffle migrate --network=energi-test"
+  }
 }
