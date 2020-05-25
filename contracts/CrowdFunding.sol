@@ -82,6 +82,13 @@ contract CrowdFunding {
 
     function reimburse(string memory _id) public payable {
         Campaign storage c = userCampaign[_id];
+        require(c.funders[msg.sender].amount > 0, 'Nothing was contributed');
+        uint contributed = c.funders[msg.sender].amount;
+        c.funders[msg.sender].amount = 0;
+
+        if (!msg.sender.send(contributed)) {
+            c.funders[msg.sender].amount = contributed;
+        }
     }
 
     function withdraw(string memory _id) public payable {
