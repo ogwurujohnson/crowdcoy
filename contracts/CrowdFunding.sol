@@ -85,12 +85,18 @@ contract CrowdFunding {
     }
 
     function withdraw(string memory _id) public payable {
-        Campaign storage c = userCampaign[_id];
-        require((c.approval/c.numFunders)*100 > 50, 'amount of allowed approvals not reached');
-        
         //before they can withdraw they would need the approval of 50% of donaters
         // budget doesnt need to be met before user can request to withdraw
         // but usser cant withdraw before end of deadline
+        Campaign storage c = userCampaign[_id];
+        require((c.approval/c.numFunders)*100 > 50, 'amount of allowed approvals not reached');
+        require(!beforeDeadline(_id), 'Cannot withdraw before a deadline');
+
+        if (c.beneficiary.send(c.received)) {
+            state = State.Paid;
+        } else {
+            state = State.Failed;
+        }
     }
 
     function getCampaignCount() public view returns(uint) {
