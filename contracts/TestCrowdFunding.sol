@@ -5,16 +5,9 @@ import './CrowdFunding.sol';
 contract TestCrowdFunding is CrowdFunding {
     uint time;
 
-    constructor(
-        string memory contractName,
-        uint targetAmountEth,
-        uint durationInMin,
-        address payable beneficiaryAddress
-    ) public CrowdFunding() {
+    constructor() public CrowdFunding() {}
 
-    }
-
-    function currentTime() internal override view returns(uint) {
+    function currentTime() internal view returns(uint) {
         return time;
     }
 
