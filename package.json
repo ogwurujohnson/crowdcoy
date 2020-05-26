@@ -6,8 +6,12 @@
   "author": "ogwurujohnson <ogwurujohnson@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "test_contract": "truffle test  --network=test",
     "compile": "truffle compile",
     "deploy": "truffle migrate --network=energi",
     "test_deploy": "truffle migrate --network=energi-test"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.0.0"
   }
 }
