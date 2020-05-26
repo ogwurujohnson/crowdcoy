@@ -8,7 +8,7 @@ contract CrowdFunding {
 
     using Utils for *;
 
-    event CampaignStarted(address addr, uint budget, uint name);
+    event CampaignStarted(address addr, uint budget, string name);
     event CampaignCompleted(string id, address addr, uint totalCollected, bool succeded, bool isActive);
 
     enum State {
@@ -50,6 +50,7 @@ contract CrowdFunding {
         userCampaign[_id] = Campaign(_beneficiary, _name, _targetAmount, 0, 0, 0,
             currentTime() + Utils.minutesToSeconds(_durationInMin), false, true);
         campaigns.push(_id);
+        emit CampaignStarted(_beneficiary, _targetAmount, _name);
     }
 
     function contribute(string memory _id) public payable {
