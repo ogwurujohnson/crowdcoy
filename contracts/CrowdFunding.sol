@@ -1,3 +1,4 @@
+//SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.4.0 < 0.7.0;
 
 import './Utils.sol';
@@ -8,7 +9,7 @@ contract CrowdFunding {
     using Utils for *;
 
     event CampaignStarted(address addr, uint budget, uint name);
-    event CampaignCompleted(string id, address addr, uint totalCollected, bool succeded);
+    event CampaignCompleted(string id, address addr, uint totalCollected, bool succeded, bool isActive);
 
     enum State {
         Ongoing,
@@ -30,17 +31,12 @@ contract CrowdFunding {
         uint numFunders;
         uint received;
         uint deadline;
-        bool status;
+        bool success;
+        bool isActive;
         mapping (address => Funder) funders;
     }
-    mapping(string => Campaign) userCampaign;
+    mapping(string => Campaign) public userCampaign;
     string[] public campaigns;
-    State public state;
-
-    modifier inState(State expectedState) {
-        require(state == expectedState, 'Invalid state');
-        _;
-    }
 
     modifier isFunder(string memory _id, address addr) {
         Campaign storage c = userCampaign[_id];
@@ -48,8 +44,11 @@ contract CrowdFunding {
         _;
     }
 
+    constructor() public {}
+
     function create(string memory _name, uint _targetAmount, uint _durationInMin, address payable _beneficiary, string memory _id) public {
-        userCampaign[_id] = Campaign(_beneficiary, _name, _targetAmount, 0, 0, 0, currentTime() + Utils.minutesToSeconds(_durationInMin), false);
+        userCampaign[_id] = Campaign(_beneficiary, _name, _targetAmount, 0, 0, 0,
+            currentTime() + Utils.minutesToSeconds(_durationInMin), false, true);
         campaigns.push(_id);
     }
 
@@ -59,19 +58,15 @@ contract CrowdFunding {
         c.received += msg.value;
 
         if (c.received >= c.budget) {
-            c.status = true;
+            c.success = true;
         }
     }
 
     function finishCampaign(string memory _id) public {
         Campaign memory c = userCampaign[_id];
-        if(!c.status) {
-            state = State.Failed;
-        } else {
-            state = State.Succeded;
-        }
-
-        emit CampaignCompleted(_id, msg.sender, c.received, c.status);
+        require(c.beneficiary == msg.sender, 'Not authorized to end this campaign');
+        c.isActive = false;
+        emit CampaignCompleted(_id, msg.sender, c.received, c.success, c.isActive);
     }
 
     function approve(string memory _id) public isFunder(_id, msg.sender) {
@@ -100,9 +95,7 @@ contract CrowdFunding {
         require(!beforeDeadline(_id), 'Cannot withdraw before a deadline');
 
         if (c.beneficiary.send(c.received)) {
-            state = State.Paid;
-        } else {
-            state = State.Failed;
+            c.isActive = false;
         }
     }
 
