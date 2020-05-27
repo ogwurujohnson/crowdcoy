@@ -33,3 +33,20 @@ contract('CrowdFunding', (accounts) => {
         });
     }
 
+    it('contract is initialized', async () => {
+        let campaignsLength = await contract.getCampaignCount();
+        expect(campaignsLength.toNumber()).to.equal(0);
+    });
+
+    it('create campaign', async () => {
+        createCampaign();
+        let campaignsLength = await contract.getCampaignCount();
+        expect(campaignsLength.toNumber()).to.equal(1);
+
+        let campaign = await contract.userCampaign.call(id);
+        expect(campaign.name).to.equal(title);
+        expect(campaign.beneficiary).to.equal(beneficiary);
+        expect(campaign.isActive).to.equal(true);
+        expect(campaign.success).to.equal(false);
+        expect(ONE_ETH.isEqualTo(campaign.budget)).to.equal(true);
+    });
