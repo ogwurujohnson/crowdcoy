@@ -19,3 +19,17 @@ contract('CrowdFunding', (accounts) => {
             gas: 2000000
         })
     });
+
+    const createCampaign = async () => {
+        await contract.create(title, ONE_ETH, 10, beneficiary, id, {
+            from: beneficiary
+        })
+    }
+
+    const contribute = async () => {
+        await contract.contribute(id, {
+            from: donor,
+            value: ONE_ETH
+        });
+    }
+
