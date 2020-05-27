@@ -71,3 +71,25 @@ contract('CrowdFunding', (accounts) => {
         expect(campaign.isActive).to.equal(false);
     });
 
+    it('cannot end campaign', async () => {
+        try {
+            createCampaign();
+            contribute();
+            await contract.finishCampaign(id, {
+                from: beneficiary
+            })
+            expect.fail();
+        } catch (error) {
+            expect(error.message).to.equal(ERROR_MSG)
+        }
+    });
+
+    it('approve campaign', async () => {
+        createCampaign();
+        contribute();
+        await contract.approve(id, {
+            from: donor
+        });
+        let campaign = await contract.userCampaign.call(id);
+        expect(campaign.approval.toNumber()).to.equal(1);
+    });
