@@ -9,7 +9,7 @@ contract CrowdFunding {
     using Utils for *;
 
     event CampaignStarted(address addr, uint budget, string name);
-    event CampaignCompleted(string id, address addr, uint totalCollected, bool succeded, bool isActive);
+    event CampaignCompleted(string id, address addr, uint totalCollected, bool succeded, bool active);
 
     enum State {
         Ongoing,
@@ -39,8 +39,7 @@ contract CrowdFunding {
     string[] public campaigns;
 
     modifier isFunder(string memory _id, address addr) {
-        Campaign storage c = userCampaign[_id];
-        require(c.funders[addr].addr == addr, 'Not a funder of this campaign');
+        require(userCampaign[_id].funders[addr].addr == addr, 'Not a funder of this campaign');
         _;
     }
 
@@ -54,36 +53,33 @@ contract CrowdFunding {
     }
 
     function contribute(string memory _id) public payable {
-        Campaign storage c = userCampaign[_id];
-        c.funders[msg.sender] = Funder({addr: msg.sender, amount: msg.value});
-        c.received += msg.value;
+        userCampaign[_id].funders[msg.sender] = Funder({addr: msg.sender, amount: msg.value});
+        userCampaign[_id].received += msg.value;
+        userCampaign[_id].numFunders++;
 
-        if (c.received >= c.budget) {
-            c.success = true;
+        if (userCampaign[_id].received >= userCampaign[_id].budget) {
+            userCampaign[_id].success = true;
         }
     }
 
     function finishCampaign(string memory _id) public {
-        Campaign memory c = userCampaign[_id];
-        require(c.beneficiary == msg.sender, 'Not authorized to end this campaign');
-        c.isActive = false;
-        emit CampaignCompleted(_id, msg.sender, c.received, c.success, c.isActive);
+        require(!beforeDeadline(_id), 'Cannot end campaign before a deadline');
+        require(userCampaign[_id].beneficiary == msg.sender, 'Not authorized to end this campaign');
+        userCampaign[_id].isActive = false;
+        emit CampaignCompleted(_id, msg.sender, userCampaign[_id].received, userCampaign[_id].success, userCampaign[_id].isActive);
     }
 
     function approve(string memory _id) public isFunder(_id, msg.sender) {
-        Campaign storage c = userCampaign[_id];
-        require(c.funders[msg.sender].amount > 0, 'Not enough donation to be able to approve');
-        c.approval++;
+        require(userCampaign[_id].funders[msg.sender].amount > 0, 'Not enough donation to be able to approve');
+        userCampaign[_id].approval++;
     }
 
     function reimburse(string memory _id) public payable {
-        Campaign storage c = userCampaign[_id];
-        require(c.funders[msg.sender].amount > 0, 'Nothing was contributed');
-        uint contributed = c.funders[msg.sender].amount;
-        c.funders[msg.sender].amount = 0;
-
+        require(userCampaign[_id].funders[msg.sender].amount > 0, 'Nothing was contributed');
+        uint contributed = userCampaign[_id].funders[msg.sender].amount;
+        userCampaign[_id].funders[msg.sender].amount = 0;
         if (!msg.sender.send(contributed)) {
-            c.funders[msg.sender].amount = contributed;
+            userCampaign[_id].funders[msg.sender].amount = contributed;
         }
     }
 
@@ -91,12 +87,11 @@ contract CrowdFunding {
         //before they can withdraw they would need the approval of 50% of donaters
         // budget doesnt need to be met before user can request to withdraw
         // but usser cant withdraw before end of deadline
-        Campaign storage c = userCampaign[_id];
-        require((c.approval/c.numFunders)*100 > 50, 'amount of allowed approvals not reached');
+        require((userCampaign[_id].approval/userCampaign[_id].numFunders)*100 > 50, 'amount of allowed approvals not reached');
         require(!beforeDeadline(_id), 'Cannot withdraw before a deadline');
 
-        if (c.beneficiary.send(c.received)) {
-            c.isActive = false;
+        if (userCampaign[_id].beneficiary.send(userCampaign[_id].received)) {
+            userCampaign[_id].isActive = false;
         }
     }
 
