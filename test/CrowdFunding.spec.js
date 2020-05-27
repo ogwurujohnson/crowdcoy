@@ -93,3 +93,42 @@ contract('CrowdFunding', (accounts) => {
         let campaign = await contract.userCampaign.call(id);
         expect(campaign.approval.toNumber()).to.equal(1);
     });
+
+    it('cannot approve', async () => {
+        try {
+            createCampaign();
+            contribute();
+            await contract.approve(id, {
+                from: accounts[4]
+            });
+            expect.fail();
+        } catch(error) {
+            expect(error.message).to.equal(APPROVE_ERROR_MSG)
+        }
+    });
+
+    it('reimburse campaign donor', async () => {
+        createCampaign();
+        contribute();
+        let campaign = await contract.userCampaign.call(id);
+        expect(campaign.numFunders.toNumber()).to.equal(1);
+        await contract.reimburse(id, {
+            from: donor
+        });
+    });
+
+    it('withdraw campaign', async () => {
+        createCampaign();
+        contribute();
+        await contract.approve(id, {
+            from: donor
+        });
+        await contract.setCurrentTime(601);
+        await contract.withdraw(id, {
+            from: beneficiary
+        })
+        let campaign = await contract.userCampaign.call(id);
+        expect(campaign.isActive).to.equal(false);
+    })
+
+});
