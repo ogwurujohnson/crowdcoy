@@ -6,12 +6,15 @@
   "author": "ogwurujohnson <ogwurujohnson@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "start": "node index.js",
     "test": "truffle test --network=test",
     "compile": "truffle compile",
     "deploy": "truffle migrate --network=energi",
     "test_deploy": "truffle migrate --network=energi-test"
   },
   "dependencies": {
-    "bignumber.js": "^9.0.0"
+    "bignumber.js": "^9.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.16"
   }
 }
