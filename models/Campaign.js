@@ -10,6 +10,7 @@ const campaignSchema = new Schema({
     received: String,
     deadline: String,
     isActive: Boolean,
+    createdAt: String,
     funders: [{
         address: String,
         amount: String
