@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
+    "serve": "nodemon index.js",
     "test": "truffle test --network=test",
     "compile": "truffle compile",
     "deploy": "truffle migrate --network=energi",
@@ -16,5 +17,8 @@
     "bignumber.js": "^9.0.0",
     "express": "^4.17.1",
     "mongoose": "^5.9.16"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }
