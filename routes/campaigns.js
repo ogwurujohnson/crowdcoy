@@ -11,3 +11,13 @@ router.get('/', async (req, res) => {
         console.log(err.message)
     }
 });
+
+router.get('/:id', async (req, res) => {
+    try {
+        const {id} = req.params;
+        const response = await campaignService.getCampaign(id);
+        res.status(response.status).json(response);
+    } catch (err) {
+        console.log(err.message)
+    }
+});
