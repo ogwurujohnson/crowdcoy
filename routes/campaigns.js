@@ -21,3 +21,15 @@ router.get('/:id', async (req, res) => {
         console.log(err.message)
     }
 });
+
+router.post('/', async (req, res) => {
+    try {
+        const {data} = req.body;
+        const response = await campaignService.createCampaign(data);
+        res.status(response.status).json(response);
+    } catch (err) {
+        console.log(err.message)
+    }
+});
+
+module.exports = router;
