@@ -29,3 +29,22 @@ const getCampaign = async (id) => {
         return responses;
     }
 }
+
+const createCampaign = async (data) => {
+    try {
+        const newCampaign = new Campaign({
+            name: data.name,
+            budget: data.budget,
+            received: data.budget,
+            deadline: data.deadline,
+            isActive: data.isActive,
+            createdAt: new Date().toISOString()
+        });
+        const campaign = await newCampaign.save();
+        responses = {status: 201, data: campaign }
+        return responses;
+    } catch (err) {
+        responses = {status: 500, message: err.message }
+        return responses;
+    }
+}
