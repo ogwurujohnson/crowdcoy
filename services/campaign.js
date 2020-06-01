@@ -48,3 +48,9 @@ const createCampaign = async (data) => {
         return responses;
     }
 }
+
+module.exports = {
+    getCampaigns,
+    getCampaign,
+    createCampaign
+}
