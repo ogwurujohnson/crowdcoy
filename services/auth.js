@@ -1,3 +1,8 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const { SECRET_KEY } = require('../config/index');
+
 let responses = {};
 function generateToken(user) {
     return jwt.sign({
@@ -35,3 +40,28 @@ const register = async ({username, password, email}) => {
     return responses;
 }
 
+const login = async ({username, password}) => {
+    const user = await User.findOne({
+        username
+    });
+    if (!user) {
+        responses = { status: 404, message: 'user not found' }
+        return responses;
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+        responses = { status: 401, message: 'wrong credentials' }
+        return responses;
+    }
+
+    const token = generateToken(user);
+
+    responses = { status: 200, data: {...user._doc, id: user.id}, token }
+    return responses;
+}
+
+module.exports = {
+    register,
+    login
+}
