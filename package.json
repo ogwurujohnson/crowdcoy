@@ -14,6 +14,7 @@
     "test_deploy": "truffle migrate --network=energi-test"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^3.1.0",
     "bcryptjs": "^2.4.3",
     "bignumber.js": "^9.0.0",
     "dotenv": "^8.2.0",
