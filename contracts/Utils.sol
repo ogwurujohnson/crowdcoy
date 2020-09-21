@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.4.0 < 0.7.0;
+pragma solidity >=0.4.0 < 0.8.0;
 
 library Utils {
     function etherToWei(uint sumInEth) public pure returns(uint) {

@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.4.0 < 0.7.0;
+pragma solidity >=0.4.0 < 0.8.0;
 
 import './Utils.sol';
 
 // Documentation: https://coursetro.com/posts/code/102/Solidity-Mappings-&-Structs-Tutorial
-contract CrowdFunding {
+contract CrowdFundingv1 {
 
     using Utils for *;
 

@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: UNLICENSED
-pragma solidity >=0.4.0 < 0.7.0;
+pragma solidity >=0.4.0 < 0.8.0;
 
 // Importing OpenZeppelin's SafeMath Implementation
-import '@openzeppelin/math/SafeMath.sol';
+import '@openzeppelin/contracts/math/SafeMath.sol';
 
 import './Utils.sol';
 
-contract CrowdFunding {
+contract CrowdFund {
   using SafeMath for uint256;
   using Utils for *;
 
@@ -21,6 +21,8 @@ contract CrowdFunding {
     uint256 deadline,
     uint256 budget
   );
+
+  mapping (address => address[]) owners;
 
   /**
   * @dev Function for starting Campaign
@@ -37,7 +39,6 @@ contract CrowdFunding {
   ) external {
     uint duration = now.add(Utils.minutesToSeconds(_durationInMin));
     Campaign newCampaign = new Campaign(msg.sender, _title, _description, duration, _budget);
-
     campaigns.push(newCampaign);
     emit CampaignStarted(
       address(newCampaign),

@@ -6,23 +6,15 @@
   "author": "ogwurujohnson <ogwurujohnson@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js",
-    "serve": "nodemon index.js",
     "test": "truffle test --network=test",
     "compile": "truffle compile",
     "deploy": "truffle migrate --network=energi",
-    "test_deploy": "truffle migrate --network=energi-test"
+    "test_deploy": "truffle migrate --reset --network=energiTestnet"
   },
-  "dependencies": {
-    "@openzeppelin/contracts": "^3.1.0",
-    "bcryptjs": "^2.4.3",
-    "bignumber.js": "^9.0.0",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.16"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "@openzeppelin/contracts": "^3.1.0",
+    "dotenv": "^8.2.0",
+    "truffle-hdwallet-provider": "^1.0.17"
   }
 }
