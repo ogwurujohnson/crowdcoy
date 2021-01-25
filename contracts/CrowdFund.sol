@@ -12,6 +12,8 @@ contract CrowdFund {
   using SafeMath for uint256;
   using Utils for *;
 
+  address public token;
+
   Campaign[] private campaigns;
 
   // Event to be omitted when campaign is created
@@ -25,6 +27,10 @@ contract CrowdFund {
   );
 
   mapping (address => address[]) owners;
+
+  constructor(address _token) public {
+    token = _token;
+  }
 
   /**
   * @dev Function for starting Campaign
@@ -40,7 +46,7 @@ contract CrowdFund {
     uint _budget
   ) external {
     uint duration = now.add(Utils.minutesToSeconds(_durationInMin));
-    Campaign newCampaign = new Campaign(msg.sender, _title, _description, duration, _budget);
+    Campaign newCampaign = new Campaign(msg.sender, _title, _description, duration, _budget, token);
     campaigns.push(newCampaign);
     emit CampaignStarted(
       address(newCampaign),
