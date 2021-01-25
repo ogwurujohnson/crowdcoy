@@ -19,6 +19,7 @@ contract Campaign is ICampaign, ERC20 {
 
   // State variables
   address payable public owner;
+  address public token;
   uint public budget; // required to reach at least this much, else everyone gets refund
   uint public deadline;
   uint256 public currentBalance;
@@ -61,9 +62,11 @@ contract Campaign is ICampaign, ERC20 {
     string memory _campaignTitle,
     string memory _campaignDesc,
     uint _deadline,
-    uint _budget
+    uint _budget,
+    address _token
   ) public {
     owner = _campaignOwner;
+    token = _token;
     budget = _budget;
     deadline = _deadline;
     title = _campaignTitle;
@@ -75,6 +78,7 @@ contract Campaign is ICampaign, ERC20 {
     contributions[msg.sender] = contributions[msg.sender].add(msg.value);
     currentBalance = currentBalance.add(msg.value);
     numberOfContributors++;
+    ERC20(token)._mint(msg.sender, msg.value);
     emit Funded(msg.sender, msg.value, currentBalance);
     // isFundingComplete();
     // modify what happens after someome contributes
@@ -100,7 +104,6 @@ contract Campaign is ICampaign, ERC20 {
       currentBalance = totalRaised;
       state = State.Successful;
     }
-
     return false;
   }
 
@@ -108,13 +111,15 @@ contract Campaign is ICampaign, ERC20 {
     uint amountToRefund = contributions[msg.sender];
     contributions[msg.sender] = 0;
 
+    // since we are burning we might have to remove this send block
     if (!msg.sender.send(amountToRefund)) {
       contributions[msg.sender] = amountToRefund;
       return false;
     } else {
       currentBalance = currentBalance.sub(amountToRefund);
     }
-
+    
+    ERC20(token)._burn(msg.sender, totalRaised);
     return true;
   }
 
